@@ -8,7 +8,8 @@ from bs4 import SoupStrainer
 
 SITE_BASE = "http://www.oreilly.com/"
 SITE_REPORTS = SITE_BASE + "free/reports.html"
-EXTENSIONS = ["pdf", "mobi", "epub"]
+EXTENSIONS = ["pdf"]
+#EXTENSIONS = ["pdf", "mobi", "epub"]
 OUTPUT_DIR = "output"
 
 only_a_tags = SoupStrainer("a")
@@ -23,7 +24,7 @@ for s in sections:
     ssoup = BeautifulSoup(sr.text, "html.parser", parse_only=only_a_tags)
     ssections = ssoup.find_all("a", attrs={"data-toggle": "popover"})
     for ss in ssections:
-        title = ss.get('title').replace('/', '-')
+        title = ss.get('title').replace('/', '-').replace('?','').replace(':','-')
         uri = ss.get('href')
         #print("  ", title, uri)
         if not "http:" in uri and not "https:" in uri:
@@ -47,7 +48,7 @@ for s in sections:
             if r2.status_code != 200:
                 continue
 
-            book_path = "{}/{}/{}".format(OUTPUT_DIR, x, title)
+            book_path = "{}/{}".format(OUTPUT_DIR, x)
             if not os.path.exists(book_path):
                 os.makedirs(book_path)
             book_file = "{}/{}.{}".format(book_path, title, e)
